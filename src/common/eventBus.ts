@@ -1,4 +1,4 @@
-import { KeyObject } from "./commonTypes";
+import { KeyObject } from "./common";
 
 export class EventBus {
   listeners: KeyObject;
@@ -25,6 +25,10 @@ export class EventBus {
   off(event: string, callback: Function) {
     if(!this.listeners[event]) throw new Error(`Invalid event ${event}`);
     this.listeners[event] = this.listeners[event].filter((item: Function) => (item !== callback));
+  }
+
+  clear() {
+    this.listeners = {};
   }
 
   // @ts-ignore

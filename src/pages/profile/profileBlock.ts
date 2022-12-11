@@ -4,12 +4,16 @@ import { profileTemplate } from "./profile.tmpl";
 import { LabledStateInputs } from "../../components/labled-state-inputs/labledStateInputs";
 import { Handlers } from "../../common/handlers";
 import { EventBus } from "../../common/eventBus";
-import { KeyObject } from "../../common/commonTypes";
+import { KeyObject, updateActions, profileActions } from "../../common/common";
+import { Requests } from "../../common/requests";
 
 type ProfileBlockType = {
   getChangeDataTitle: string,
   profileImage: string,
   profileChangeDataTitle: string,
+  submitWaiting: string,
+  errorMessage: string,
+  profileGoBackTitle: string,
   profileChangePasswordTitle: string,
   labledStateInputs: LabledStateInputs,
   profileTitle: string,
@@ -26,10 +30,13 @@ export class ProfileBlock extends Block<ProfileBlockType> {
     const getIsHidden = (): string => (state.dataChangeMode ? "" : " hidden");
     super("div", {
       attr: { class: "profile" },
-      profileTitle: "Князь Мышкин",
-      profileImage: "./resources/25.jpg",
+      profileTitle: "",
+      profileImage: "",
       profileChangeDataTitle: getChangeDataTitle(),
+      submitWaiting: "",
+      errorMessage: "",
       profileChangePasswordTitle: "Изменить пароль",
+      profileGoBackTitle: "Назад",
       profileLogoutTitle: "Выйти",
       labledStateInputs: new LabledStateInputs("ul", {
         attr: { class: "profile__details" },
@@ -38,57 +45,80 @@ export class ProfileBlock extends Block<ProfileBlockType> {
         items: [
           {
             title: "Имя",
-            value: "Князь",
+            value: "",
             id: "first_name",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Фамилия",
-            value: "Мышкин",
+            value: "",
             id: "second_name",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Логин",
-            value: "batman",
+            value: "",
             id: "login",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Имя в чате",
-            value: "little_mouse",
+            value: "",
             id: "display_name",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Электронная почта",
-            value: "batman@hollywood.com",
+            value: "",
             id: "email",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Телефон",
-            value: "+1911911911",
+            value: "",
             id: "phone",
             type: "text",
             isInvalidClass: "",
             isHidden: "",
             errorMessage: "",
+            disabled: "",
+            checked: "",
+          },
+          {
+            title: "Сменить пароль",
+            value: "",
+            id: "changePass",
+            type: "checkbox",
+            isInvalidClass: "",
+            isHidden: getIsHidden(),
+            errorMessage: "",
+            disabled: "",
+            checked: "",
           },
           {
             title: "Старый пароль",
@@ -98,6 +128,8 @@ export class ProfileBlock extends Block<ProfileBlockType> {
             isInvalidClass: "",
             isHidden: getIsHidden(),
             errorMessage: "",
+            disabled: "disabled",
+            checked: "",
           },
           {
             title: "Новый пароль",
@@ -107,15 +139,18 @@ export class ProfileBlock extends Block<ProfileBlockType> {
             isInvalidClass: "",
             isHidden: getIsHidden(),
             errorMessage: "",
+            disabled: "disabled",
+            checked: "",
           },
           {
             title: "Аватар",
-            value: "",
             id: "avatar",
-            type: "text",
+            type: "file",
             isInvalidClass: "",
             isHidden: getIsHidden(),
             errorMessage: "",
+            disabled: "",
+            checked: "",
           },
         ],
         events: {
@@ -130,18 +165,66 @@ export class ProfileBlock extends Block<ProfileBlockType> {
 
     const bus = new EventBus();
     Handlers.busBind(this);
-    bus.on("profile:change-mode", () => {
+    bus.on(profileActions.changeMode, () => {
       state.dataChangeMode = !state.dataChangeMode;
       this.setProps({ profileChangeDataTitle: getChangeDataTitle() } as ProfileBlockType);
       const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) =>
         // eslint-disable-next-line implicit-arrow-linebreak
-        (["oldPassword", "newPassword", "avatar"].includes(item.id) ? { ...item, isHidden: getIsHidden() } : item));
+        (["changePass", "oldPassword", "newPassword", "avatar"].includes(item.id) ? { ...item, isHidden: getIsHidden() } : item));
       this._children.labledStateInputs.setProps({
         dataChangeMode: getChangeMode(),
         isReadOnly: getIsReadOnly(),
         items: newItemsProps,
       });
     });
+    bus.on(updateActions.startWaiting, () => {
+      this.setProps({ profileTitle: "Загрузка..." } as ProfileBlockType);
+    });
+    bus.on(updateActions.getData, (updateItems: KeyObject) => {
+      this.setProps({
+        profileTitle: updateItems.display_name ?? "",
+        profileImage: Requests.getAvatarResource(updateItems.avatar),
+      } as ProfileBlockType);
+      const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        (updateItems[item.id] ? { ...item, value: updateItems[item.id] } : item));
+      this._children.labledStateInputs.setProps({ items: newItemsProps });
+    });
+    bus.on(profileActions.changePassEnable, () => {
+      const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) => {
+        if(["oldPassword", "newPassword"].includes(item.id)) {
+          return { ...item, disabled: "" };
+        }
+        if(item.id === "changePass") {
+          return ({ ...item, checked: "checked" });
+        }
+        return item;
+      });
+      this._children.labledStateInputs.setProps({
+        items: newItemsProps,
+      });
+    });
+    bus.on(profileActions.changePassDisable, () => {
+      const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) => {
+        if(["oldPassword", "newPassword"].includes(item.id)) {
+          return {
+            ...item,
+            disabled: "disabled",
+            value: "",
+            errorMessage: "",
+            isInvalidClass: "",
+          };
+        }
+        if(item.id === "changePass") {
+          return ({ ...item, checked: "" });
+        }
+        return item;
+      });
+      this._children.labledStateInputs.setProps({
+        items: newItemsProps,
+      });
+    });
+    Requests.profileUpdate();
   }
 
   render() {
@@ -150,6 +233,9 @@ export class ProfileBlock extends Block<ProfileBlockType> {
         { profileTitle: this._props.profileTitle },
         { profileImage: this._props.profileImage },
         { profileChangeDataTitle: this._props.profileChangeDataTitle },
+        { submitWaiting: this._props.submitWaiting },
+        { errorMessage: this._props.errorMessage },
+        { profileGoBackTitle: this._props.profileGoBackTitle },
         { dataChangeMode: this._props.dataChangeMode },
         { isReadOnly: this._props.isReadOnly },
         { profileChangePasswordTitle: this._props.profileChangePasswordTitle },
