@@ -22,24 +22,22 @@ function queryStringify(data: KeyObject) {
   return keys.reduce((result, key, index) => `${result}${key}=${data[key]}${index < keys.length - 1 ? "&" : ""}`, "?");
 }
 
+type HTTPMethod = (url: string, options?: Options) => Promise<unknown>;
+
 export class HTTPTransport {
-  static get(url: string, options: Options = {}) {
-    return HTTPTransport.request(url, { ...options, method: METHODS.GET }, options.timeout);
-  }
+  static get: HTTPMethod = (url, options = {}) =>
+    HTTPTransport.request(url, { ...options, method: METHODS.GET }, options.timeout);
 
-  static post(url: string, options: Options = {}) {
-    return HTTPTransport.request(url, { ...options, method: METHODS.POST }, options.timeout);
-  }
+  static post: HTTPMethod = (url, options = {}) =>
+    HTTPTransport.request(url, { ...options, method: METHODS.POST }, options.timeout);
 
-  static put(url: string, options: Options = {}) {
-    return HTTPTransport.request(url, { ...options, method: METHODS.PUT }, options.timeout);
-  }
+  static put: HTTPMethod = (url, options = {}) =>
+    HTTPTransport.request(url, { ...options, method: METHODS.PUT }, options.timeout);
 
-  static delete(url: string, options: Options = {}) {
-    return HTTPTransport.request(url, { ...options, method: METHODS.DELETE }, options.timeout);
-  }
+  static delete: HTTPMethod = (url, options = {}) =>
+    HTTPTransport.request(url, { ...options, method: METHODS.DELETE }, options.timeout);
 
-  static request(url: string, options: Options = {}, timeout = 5000) {
+  static request(url: string, options: Options = {}, timeout = 5000): Promise<unknown> {
     const { headers = {}, method, data } = options;
 
     return new Promise((resolve, reject) => {

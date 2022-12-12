@@ -174,7 +174,6 @@ export class Handlers {
       ({ id, value }: InputParams, relatedTarget: HTMLElement, errorMessage: string) => {
         if((block instanceof LoginBlock) || (block instanceof RegistrationBlock)) {
           const newItemsProps = block._children.labledInputs._props.items.map((item: KeyObject) =>
-            // eslint-disable-next-line implicit-arrow-linebreak
             (item.id === id ? {
               ...item, value, errorMessage, isInvalidClass: "input-block__input_invalid",
             } : item));
@@ -183,7 +182,6 @@ export class Handlers {
         if(block instanceof ProfileBlock) {
           const newItemsProps = block._children.labledStateInputs._props.items
             .map((item: KeyObject) =>
-            // eslint-disable-next-line implicit-arrow-linebreak
               (item.id === id ? {
                 ...item, value, errorMessage, isInvalidClass: " profile-detail__value_invalid",
               } : item));
@@ -198,7 +196,6 @@ export class Handlers {
       ({ id, value }: InputParams, relatedTarget: HTMLElement, errorMessage: string) => {
         if((block instanceof LoginBlock) || (block instanceof RegistrationBlock)) {
           const newItemsProps = block._children.labledInputs._props.items.map((item: KeyObject) =>
-            // eslint-disable-next-line implicit-arrow-linebreak
             (item.id === id ? {
               ...item, value, errorMessage, isInvalidClass: "",
             } : item));
@@ -207,7 +204,6 @@ export class Handlers {
         if(block instanceof ProfileBlock) {
           const newItemsProps = block._children.labledStateInputs._props.items
             .map((item: KeyObject) =>
-              // eslint-disable-next-line implicit-arrow-linebreak
               (item.id === id ? {
                 ...item, value, errorMessage, isInvalidClass: "",
               } : item));

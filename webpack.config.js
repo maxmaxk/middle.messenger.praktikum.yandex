@@ -1,26 +1,19 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { merge } = require("webpack-merge");
+const devConfig = require("./webpack.dev.config");
+const prodConfig = require("./webpack.prod.config");
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const stylesHandler = "style-loader";
 
-const config = {
+const commonConfig = {
   entry: "./src/index.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
-  },
-  devServer: {
-    port: 3000,
-    historyApiFallback: {
-      rewrites: [
-        { from: /.*/, to: "/" },
-      ],
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -60,10 +53,6 @@ const config = {
 };
 
 module.exports = () => {
-  if (isProduction) {
-    config.mode = "production";
-  } else {
-    config.mode = "development";
-  }
-  return config;
+  if (isProduction) return merge(commonConfig, prodConfig);
+  return merge(commonConfig, devConfig);
 };

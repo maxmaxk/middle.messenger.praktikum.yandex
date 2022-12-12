@@ -179,16 +179,13 @@ export class Requests {
     const profileChangeAvatar = profileChangeData.avatar.value;
     let chain = Promise.resolve();
     chain = chain.then(() =>
-      // eslint-disable-next-line implicit-arrow-linebreak
       Requests.makeRequest(reqParams.profileChange, Requests.getOptions(profileChangeAccount)));
     if(profileChangePassword.oldPassword?.value) {
       chain = chain.then(() =>
-        // eslint-disable-next-line implicit-arrow-linebreak
         Requests.makeRequest(reqParams.passwordChange, Requests.getOptions(profileChangePassword)));
     }
     if(profileChangeAvatar.name) {
       chain = chain.then(() =>
-        // eslint-disable-next-line implicit-arrow-linebreak
         Requests.makeRequest(
           reqParams.avatarChange,
           Requests.getAvatarOptions(profileChangeAvatar),
