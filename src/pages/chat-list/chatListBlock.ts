@@ -50,7 +50,6 @@ export class ChatListBlock extends Block<ChatListBlockType> {
 
   constructor() {
     const getActiveChat = () =>
-      // eslint-disable-next-line implicit-arrow-linebreak
       state.chatList.filter((item: KeyObject) => item.id === state.activeChatId)[0];
     const getIsActiveChat = (): string => (state.activeChatId < 0 ? "inactive-message" : "active-message");
     super("div", {

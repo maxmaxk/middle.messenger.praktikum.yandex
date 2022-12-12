@@ -32,7 +32,9 @@
          "no-case-declarations": 0,
          "prefer-regex-literals": 0,
          "no-plusplus": 0,
-         "@typescript-eslint/ban-ts-comment": 0
+         "@typescript-eslint/ban-ts-comment": 0,
+         "@typescript-eslint/no-var-requires": 0,
+         "implicit-arrow-linebreak": 0
     },
     "settings": {
         "import/resolver": {

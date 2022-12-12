@@ -169,7 +169,6 @@ export class ProfileBlock extends Block<ProfileBlockType> {
       state.dataChangeMode = !state.dataChangeMode;
       this.setProps({ profileChangeDataTitle: getChangeDataTitle() } as ProfileBlockType);
       const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
         (["changePass", "oldPassword", "newPassword", "avatar"].includes(item.id) ? { ...item, isHidden: getIsHidden() } : item));
       this._children.labledStateInputs.setProps({
         dataChangeMode: getChangeMode(),
@@ -186,7 +185,6 @@ export class ProfileBlock extends Block<ProfileBlockType> {
         profileImage: Requests.getAvatarResource(updateItems.avatar),
       } as ProfileBlockType);
       const newItemsProps = this._children.labledStateInputs._props.items.map((item: KeyObject) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
         (updateItems[item.id] ? { ...item, value: updateItems[item.id] } : item));
       this._children.labledStateInputs.setProps({ items: newItemsProps });
     });
