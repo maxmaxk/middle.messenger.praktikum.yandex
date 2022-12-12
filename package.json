@@ -13,7 +13,8 @@
     "watch": "webpack --watch",
     "serve": "webpack serve",
     "prepare": "husky install",
-    "validate": "npm-run-all --parallel test lint-staged",
+    "lintstaged": "npx lint-staged",
+    "validate": "npm-run-all --parallel test lintstaged",
     "precommit": "npm run validate",
     "prepush": "npm run validate"
   },
